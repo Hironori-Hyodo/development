@@ -1,0 +1,16 @@
+FROM node:22.14
+
+# package.jsonをfrontendのアプリ内にコピー
+COPY  ./dev/frontend/app/package.json ./dev/frontend/app/package-lock.json /opt/frontend/app/
+
+# npm installを実行
+# RUN cd /opt/frontend/app/ && npm ci
+
+# viteのみglobal installを実行
+# RUN cd /opt/frontend/app/ && npm i -g vite
+
+# ソースをコピー
+COPY ./dev/frontend/app/ /opt/frontend/app/
+
+# サーバーを起動
+# CMD [ "npm", "run", "dev"]

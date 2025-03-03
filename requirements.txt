@@ -1,0 +1,3 @@
+fastapi
+uvicorn  # ASGIサーバー (FastAPIを動かすのに必要)
+# python-dotenv  # 環境変数管理（.env ファイルを使う場合）

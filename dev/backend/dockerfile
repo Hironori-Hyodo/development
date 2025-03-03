@@ -1,0 +1,25 @@
+FROM python:3.11
+USER root
+
+# 必要なパッケージをインストール（ロケール & タイムゾーン）
+RUN apt-get update && apt-get install -y \
+    locales vim less \
+    && localedef -f UTF-8 -i ja_JP ja_JP.UTF-8 \
+    && ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+
+# 環境変数の設定
+ENV LANG=ja_JP.UTF-8
+ENV LANGUAGE=ja_JP:ja
+ENV LC_ALL=ja_JP.UTF-8
+ENV TZ=Asia/Tokyo
+ENV TERM=xterm
+
+# pip, setuptools のアップグレード
+RUN pip install --upgrade pip setuptools
+
+# 必要な Python パッケージをインストール
+COPY requirements.txt /opt/backend/app/
+RUN pip install --no-cache-dir -r /opt/backend/app/requirements.txt
+
+# 開発モードで起動
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

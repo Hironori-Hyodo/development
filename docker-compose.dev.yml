@@ -1,0 +1,18 @@
+version: "3"
+services:
+  backend:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./dev/backend/dockerfile
+    tty: true
+    volumes:
+      - ./dev/backend/app:/opt/backend/app
+  frontend:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./dev/frontend/dockerfile
+    tty: true
+    # volumes:
+      # - ./dev/frontend/app:/opt/frontend/app
