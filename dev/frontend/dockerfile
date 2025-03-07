@@ -1,16 +1,22 @@
-FROM node:22.14
+# ベースイメージとしてNode.jsを使用
+FROM node:22-slim
 
-# package.jsonをfrontendのアプリ内にコピー
-COPY  ./dev/frontend/app/package.json ./dev/frontend/app/package-lock.json /opt/frontend/app/
+# 作業ディレクトリを設定
+WORKDIR /app/frontend
 
-# npm installを実行
-# RUN cd /opt/frontend/app/ && npm ci
+# パッケージファイルをコピー
+COPY ./dev/frontend/package.json ./dev/frontend/package-lock.json ./
 
-# viteのみglobal installを実行
-# RUN cd /opt/frontend/app/ && npm i -g vite
+# 依存関係をインストール
+RUN npm install
 
-# ソースをコピー
-COPY ./dev/frontend/app/ /opt/frontend/app/
+# ソースのコピー
+COPY ./dev/frontend ./
 
-# サーバーを起動
-# CMD [ "npm", "run", "dev"]
+# 開発用サーバの（ビルドに変更）
+CMD ["npm", "run", "dev"]
+
+
+####################################
+######## ビルドに変更 ###############
+####################################

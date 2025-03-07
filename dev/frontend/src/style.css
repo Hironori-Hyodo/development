@@ -1,0 +1,33 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  /* 共通のカラーパレット */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray: #a9a9a9;
+  --color-dark-gray: #7f7f7f;
+  --color-blue: #4d79ff;
+  --color-light-blue: #697fbf;
+  --color-red: #ff3131;
+  --color-link: #1a0dab;
+  --color-main: linear-gradient(90deg, #0d0d20 0%, #00194c 100%)
+}
+
+/* PC（デフォルト） */
+html {
+  font-size: 100%;
+}
+
+/* タブレット */
+@media screen and (max-width: 959px) {
+  html {
+    font-size: 87.5%;
+  }
+}
+
+/* スマホ */
+@media screen and (max-width: 767px) {
+  html {
+    font-size: 75%;
+  }
+}
