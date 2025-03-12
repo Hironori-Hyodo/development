@@ -1,4 +1,5 @@
 fastapi
 uvicorn
-opensearch-py
-python-dotenv
+python-multipart
+openpyxl
+sqlalchemy

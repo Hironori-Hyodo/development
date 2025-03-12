@@ -1,11 +1,17 @@
 version: "3"
 services:
-  # backend:
-  #   restart: always
-  #   container_name: "backend"
-  #   working_dir: "/opt/backend/app"
-  #   ports:
-  #     - "8080:8000"
+  backend:
+    restart: always
+    container_name: "backend"
+    working_dir: "/opt/backend/app"
+    ports:
+      - "8080:8000"
+    build:
+      context: .
+      dockerfile: ./dev/backend/dockerfile
+    tty: true
+    volumes:
+      - ./dev/backend/app:/opt/backend/app
   frontend:
     restart: always
     container_name: "frontend"
@@ -17,4 +23,4 @@ services:
     tty: true
     volumes:
       - ./dev/frontend:/app/frontend
-      - /app/frontend/node_modules # node_modulesはマウント対象外にする
+      - /app/frontend/node_modules
