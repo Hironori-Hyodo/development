@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const fileList = ref<File[]>([]); // ファイルのリスト
+
+const emit = defineEmits(["updateSheetsData"]);
+const router = useRouter();
 
 // アップロードボタンをクリックしたら file input を開く
 const selectFiles = () => {
@@ -45,8 +49,12 @@ const uploadFiles = async () => {
       throw new Error(errorData.detail || "アップロードに失敗しました。");
     }
 
+    const responseData = await response.json();
+    emit("updateSheetsData", responseData.sheets);
+
     alert("アップロードが成功しました！");
     fileList.value = []; // 成功後、リストをクリア
+    router.push("/");
   } catch (error: any) {
     console.error("アップロードエラー:", error);
     alert(error.message);

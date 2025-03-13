@@ -1,5 +1,17 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import HeaderComponent from "./components/organism/header/HeaderComponent.vue";
+
+type SheetsData = {
+  sheet_name: string;
+  update_date: string;
+};
+
+const sheetsData = ref<SheetsData[]>([]);
+
+const updateSheetsData = (newData: SheetsData[]) => {
+  sheetsData.value = newData;
+};
 </script>
 
 <template>
@@ -18,7 +30,10 @@ import HeaderComponent from "./components/organism/header/HeaderComponent.vue";
         </div>
       </aside>
 
-      <router-view />
+      <router-view
+        :sheetsData="sheetsData"
+        @updateSheetsData="updateSheetsData"
+      />
     </div>
   </div>
 </template>
