@@ -1,5 +1,15 @@
 <script setup lang="ts">
+import { ref } from "vue";
+
 defineProps(["sheetsData"]);
+
+const selectedWorkbook = ref<string | null>(null);
+const selectedSheet = ref<string | null>(null);
+
+const setSelectedSheet = (workbookName: string, sheetName: string) => {
+  selectedWorkbook.value = workbookName;
+  selectedSheet.value = sheetName;
+};
 </script>
 
 <template>
@@ -10,15 +20,30 @@ defineProps(["sheetsData"]);
           <tr>
             <th>データ名</th>
             <th>更新日</th>
+            <th>スクショ</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="sheet in sheetsData" :key="sheet.sheet_name">
+          <tr
+            v-for="sheet in sheetsData"
+            :key="`${sheet.workbook_name}_${sheet.sheet_name}`"
+          >
             <td>
-              <button>{{ sheet.sheet_name }}</button>
+              <button
+                @click="setSelectedSheet(sheet.workbook_name, sheet.sheet_name)"
+              >
+                {{ sheet.sheet_name }}
+              </button>
             </td>
             <td>
               {{ sheet.update_date }}
+            </td>
+            <td>
+              <img
+                v-if="selectedWorkbook && selectedSheet"
+                :src="`http://localhost:8080/api/screenshot/${selectedWorkbook}/${selectedSheet}`"
+                alt="Excel Screenshot"
+              />
             </td>
           </tr>
         </tbody>

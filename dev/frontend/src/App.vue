@@ -3,6 +3,7 @@ import { ref } from "vue";
 import HeaderComponent from "./components/organism/header/HeaderComponent.vue";
 
 type SheetsData = {
+  workbook_name: string;
   sheet_name: string;
   update_date: string;
 };

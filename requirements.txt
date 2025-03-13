@@ -3,5 +3,5 @@ uvicorn
 python-multipart
 openpyxl
 sqlalchemy
-excel2img
 pillow
+pandas

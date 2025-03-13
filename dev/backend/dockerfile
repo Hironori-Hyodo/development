@@ -14,6 +14,14 @@ ENV LC_ALL=ja_JP.UTF-8
 ENV TZ=Asia/Tokyo
 ENV TERM=xterm
 
+# 必要なシステムパッケージ（LibreOffice, Xvfb, PDF/画像変換ツール）を追加
+RUN apt-get update && apt-get install -y \
+    libreoffice \
+    xvfb \
+    poppler-utils \
+    imagemagick \
+    && rm -rf /var/lib/apt/lists/*
+
 # pip, setuptools のアップグレード
 RUN pip install --upgrade pip setuptools
 

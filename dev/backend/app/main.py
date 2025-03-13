@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import users,items,upload
+from routers import users,items,upload,upload_2
 from fastapi.middleware.cors import CORSMiddleware
 
 app  = FastAPI()
@@ -23,4 +23,5 @@ async def roo():
 
 app.include_router(users.router,prefix="/api")
 app.include_router(items.router,prefix="/api")
-app.include_router(upload.router, prefix="/api")
+# app.include_router(upload.router, prefix="/api")
+app.include_router(upload_2.router, prefix="/api")
