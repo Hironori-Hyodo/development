@@ -5,3 +5,4 @@ openpyxl
 sqlalchemy
 pillow
 pandas
+excel2json-3

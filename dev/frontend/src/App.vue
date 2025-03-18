@@ -3,15 +3,56 @@ import { ref } from "vue";
 import HeaderComponent from "./components/organism/header/HeaderComponent.vue";
 
 type SheetsData = {
-  workbook_name: string;
   sheet_name: string;
   update_date: string;
 };
 
 const sheetsData = ref<SheetsData[]>([]);
+const fileInput = ref<HTMLInputElement | null>(null);
 
-const updateSheetsData = (newData: SheetsData[]) => {
-  sheetsData.value = newData;
+// アップロードボタンが押されたら file input を開く
+const selectFiles = () => {
+  fileInput.value?.click();
+};
+
+// ファイルが選択されたときの処理（選択後すぐにアップロード）
+const handleFileUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (!target.files?.length) return;
+
+  const fileList = Array.from(target.files);
+  await uploadFiles(fileList);
+};
+
+// ファイルをアップロード（選択されたら即座に実行）
+const uploadFiles = async (files: File[]) => {
+  if (files.length === 0) return;
+
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  try {
+    const response = await fetch("http://localhost:8080/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "アップロードに失敗しました。");
+    }
+
+    const responseData = await response.json();
+    console.log(responseData);
+    sheetsData.value = responseData.sheets; // データを更新
+
+    alert("アップロードが成功しました！");
+  } catch (error: any) {
+    console.error("アップロードエラー:", error);
+    alert(error.message);
+  }
 };
 </script>
 
@@ -21,20 +62,26 @@ const updateSheetsData = (newData: SheetsData[]) => {
 
     <div class="container">
       <aside class="aside">
-        <div class="img-wrapper btn-upload">
-          <router-link to="/upload">
-            <img src="/upload.svg" alt="upload button" />
-          </router-link>
+        <div class="img-wrapper btn-upload" @click="selectFiles">
+          <img src="/upload.svg" alt="upload button" />
         </div>
+
+        <input
+          type="file"
+          ref="fileInput"
+          @change="handleFileUpload"
+          multiple
+          style="display: none"
+        />
+
         <div class="img-wrapper btn-create">
           <img src="/create-data.svg" alt="create button" />
         </div>
       </aside>
 
-      <router-view
-        :sheetsData="sheetsData"
-        @updateSheetsData="updateSheetsData"
-      />
+      <div class="main">
+        <router-view :sheetsData="sheetsData" />
+      </div>
     </div>
   </div>
 </template>
@@ -42,21 +89,9 @@ const updateSheetsData = (newData: SheetsData[]) => {
 <style scoped>
 .wrapper {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
+  min-height: 100vh;
   background: var(--color-main);
-}
-
-.header {
-  padding-bottom: 2rem;
-}
-
-.header__logo {
-  padding-top: 2.125rem;
-  padding-left: 1.5rem;
-}
-
-.header__logo > img {
-  width: 12rem;
 }
 
 .container {
@@ -73,6 +108,7 @@ const updateSheetsData = (newData: SheetsData[]) => {
 
 .img-wrapper {
   width: 13.5rem;
+  cursor: pointer;
 }
 
 .btn-upload {
@@ -81,5 +117,10 @@ const updateSheetsData = (newData: SheetsData[]) => {
 
 .btn-create {
   margin-top: 1rem;
+}
+
+.main {
+  width: 100%;
+  height: 90vh;
 }
 </style>

@@ -1,53 +1,71 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import DataViewer from "../components/organism/data-viewer/DataViewer.vue";
 
-defineProps(["sheetsData"]);
+const props = defineProps(["sheetsData"]);
+console.log(props.sheetsData);
 
-const selectedWorkbook = ref<string | null>(null);
 const selectedSheet = ref<string | null>(null);
+const selectedData = ref<{ updateDate: string; data: any[] } | null>(null);
 
-const setSelectedSheet = (workbookName: string, sheetName: string) => {
-  selectedWorkbook.value = workbookName;
-  selectedSheet.value = sheetName;
+// シート名のリストを取得
+const sheetNames = computed(() => Object.keys(props.sheetsData));
+
+// `v-data-table` に適した `items` を作成（updateDate を追加）
+const items = computed(() =>
+  sheetNames.value.map((sheetName) => ({
+    name: sheetName,
+    updateDate: props.sheetsData[sheetName]?.updateDate || "N/A",
+  }))
+);
+
+console.log("SV", items);
+
+// シートを選択したときの処理
+const selectSheet = (
+  event: PointerEvent,
+  { item }: { item: { name: string } }
+) => {
+  selectedSheet.value = item.name;
+  selectedData.value = props.sheetsData[item.name] || {
+    updateDate: "N/A",
+    data: [],
+  };
+};
+
+// シートを閉じる
+const closeSheet = () => {
+  selectedSheet.value = null;
+  selectedData.value = null;
 };
 </script>
 
 <template>
   <main class="main">
     <div class="main__wrapper">
-      <table class="main__table">
-        <thead>
-          <tr>
-            <th>データ名</th>
-            <th>更新日</th>
-            <th>スクショ</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="sheet in sheetsData"
-            :key="`${sheet.workbook_name}_${sheet.sheet_name}`"
-          >
-            <td>
-              <button
-                @click="setSelectedSheet(sheet.workbook_name, sheet.sheet_name)"
-              >
-                {{ sheet.sheet_name }}
-              </button>
-            </td>
-            <td>
-              {{ sheet.update_date }}
-            </td>
-            <td>
-              <img
-                v-if="selectedWorkbook && selectedSheet"
-                :src="`http://localhost:8080/api/screenshot/${selectedWorkbook}/${selectedSheet}`"
-                alt="Excel Screenshot"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <h1 class="main__title">最近のデータ</h1>
+      <!-- v-data-table: シート名一覧 -->
+      <v-data-table
+        :items="items"
+        :headers="[
+          { title: 'データ名', key: 'name' },
+          { title: 'データ種別', key: 'dataKind' },
+          { title: 'ユーザ名', key: 'userName' },
+          { title: '更新日', key: 'updateDate' },
+          { title: 'データID', key: 'dataID' },
+        ]"
+        @click:row="selectSheet"
+        class="clickable-table"
+      ></v-data-table>
+
+      <!-- 選択されたシートのデータを表示 -->
+      <DataViewer
+        v-if="selectedData"
+        :selectedSheet="selectedSheet"
+        :selectedData="selectedData.data"
+        :updateDate="selectedData.updateDate"
+        @close="closeSheet"
+      />
     </div>
   </main>
 </template>
@@ -59,16 +77,45 @@ const setSelectedSheet = (workbookName: string, sheetName: string) => {
   margin-bottom: 1.5rem;
   width: 100%;
   height: 100%;
-  min-height: 800px;
+  min-height: 300px;
+  max-height: 800px;
   opacity: 0.5;
 }
 
 .main__wrapper {
   padding-top: 2rem;
   padding-left: 1rem;
+  position: relative;
 }
 
-.main__table {
+.main__title {
   color: var(--color-white);
+}
+
+.clickable-table {
+  height: 100%;
+  min-height: 600px;
+  margin-top: 2rem;
+  background-color: inherit;
+  color: var(--color-white);
+  table-layout: auto;
+}
+
+.clickable-table tbody tr {
+  cursor: pointer;
+  border-bottom: 1px solid gray;
+  text-align: left;
+}
+
+.clickable-table tbody tr:hover {
+  background-color: rgba(0, 150, 255, 0.2);
+}
+
+.tr--clickable {
+  border-bottom: 1px solid gray !important;
+}
+
+.v-table__wrapper table tbody tr td {
+  border: 1px solid var(--color-white);
 }
 </style>
