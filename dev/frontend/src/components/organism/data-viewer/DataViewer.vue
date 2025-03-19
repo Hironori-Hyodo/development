@@ -5,6 +5,8 @@ const props = defineProps<{
   selectedSheet: string | null;
   selectedData: any[];
   updateDate: string;
+  dataKind: string;
+  userName: string;
 }>();
 
 console.log("P", props);
@@ -23,16 +25,15 @@ const columns = computed(() => {
 <template>
   <Transition name="slide">
     <div v-if="selectedSheet" class="selected-data">
-      <button class="close-button" @click="emit('close')">×</button>
+      <button class="close-button" @click="emit('close')">>>></button>
       <h2 class="title">{{ selectedSheet }}</h2>
-      <p>更新日: {{ updateDate }}</p>
+      <div class="info">
+        <p>登録者: {{ userName }}</p>
+        <p>データ種別: {{ dataKind }}</p>
+        <p>更新日: {{ updateDate }}</p>
+      </div>
 
       <table class="table" border="1">
-        <thead>
-          <tr>
-            <th v-for="col in columns" :key="col">{{ col }}</th>
-          </tr>
-        </thead>
         <tbody>
           <tr v-for="(row, index) in selectedData" :key="index">
             <td v-for="col in columns" :key="col">{{ row[col] }}</td>
@@ -62,18 +63,19 @@ const columns = computed(() => {
 .close-button {
   position: absolute;
   top: 10px;
-  right: 10px;
-  background: #ff5555;
+  left: 10px;
+  background-color: inherit;
+  /* background: #ff5555; */
   color: white;
   border: none;
-  padding: 5px 10px;
+  /* padding: 5px 10px; */
   font-size: 16px;
   cursor: pointer;
   border-radius: 50%;
 }
 
 .close-button:hover {
-  background: #ff2222;
+  /* background: #ff2222; */
 }
 
 .selected-data {
@@ -82,7 +84,7 @@ const columns = computed(() => {
   position: absolute;
   right: 0;
   top: 0;
-  padding: 10px;
+  padding: 3rem;
   border: 1px solid #ccc;
   background: var(--color-main);
   overflow: scroll;
@@ -93,7 +95,15 @@ const columns = computed(() => {
 }
 
 .title {
+  font-weight: bold;
   color: var(--color-white);
+}
+
+.info {
+  margin-top: 1rem;
+  display: flex;
+  color: var(--color-white);
+  gap: 2rem;
 }
 
 .table {

@@ -2,11 +2,19 @@
 import { computed, ref } from "vue";
 import DataViewer from "../components/organism/data-viewer/DataViewer.vue";
 
+type UploadData = {
+  updateDate: string;
+  userName: string;
+  dataKind: string;
+  data: any[];
+  dataID: string;
+};
+
 const props = defineProps(["sheetsData"]);
 console.log(props.sheetsData);
 
 const selectedSheet = ref<string | null>(null);
-const selectedData = ref<{ updateDate: string; data: any[] } | null>(null);
+const selectedData = ref<UploadData | null>(null);
 
 // シート名のリストを取得
 const sheetNames = computed(() => Object.keys(props.sheetsData));
@@ -16,6 +24,9 @@ const items = computed(() =>
   sheetNames.value.map((sheetName) => ({
     name: sheetName,
     updateDate: props.sheetsData[sheetName]?.updateDate || "N/A",
+    userName: props.sheetsData[sheetName]?.userName || "",
+    dataKind: props.sheetsData[sheetName]?.dataKind || "",
+    dataID: props.sheetsData[sheetName]?.dataID || "",
   }))
 );
 
@@ -64,6 +75,8 @@ const closeSheet = () => {
         :selectedSheet="selectedSheet"
         :selectedData="selectedData.data"
         :updateDate="selectedData.updateDate"
+        :userName="selectedData.userName"
+        :dataKind="selectedData.dataKind"
         @close="closeSheet"
       />
     </div>

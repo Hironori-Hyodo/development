@@ -1,20 +1,18 @@
-from fastapi import APIRouter, UploadFile, HTTPException
-from fastapi.responses import JSONResponse, Response
-import openpyxl as op
+from fastapi import APIRouter, UploadFile
+from fastapi.responses import JSONResponse
 from io import BytesIO
 from datetime import datetime
 import os
 import sqlite3
-import subprocess
 import pandas as pd
 import json
+import uuid
 
 router = APIRouter()
 
-# DB_FILE = "excel_data.db"
-# UPLOAD_DIR = "temp"
-# os.makedirs(UPLOAD_DIR, exist_ok=True)
-
+DB_FILE = "excel_data.db"
+UPLOAD_DIR = "temp"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # DB 初期化（テーブルを削除して再作成）
 def init_db():
@@ -64,35 +62,13 @@ async def upload(files: UploadFile):
     for sheet_name, df in df_dict.items():
         sheets_data[sheet_name] = {
             "updateDate": datetime_str,
-            "data": df.fillna("").values.tolist()  # ← NaN を空文字に置換し、2Dリストに変換
+            "dataKind":"データ",
+            "userName": "兵頭 弘訓",
+            "data": df.fillna("").values.tolist(),  # ← NaN を空文字に置換し、2Dリストに変換
+            "dataID": str(uuid.uuid4())
         }
 
     # 確認用
     print(json.dumps(sheets_data, indent=2, ensure_ascii=False))
 
     return JSONResponse({"sheets": sheets_data})
-
-    # # Get current date
-    # dt = datetime.now()
-    # datetime_str = dt.strftime("%Y.%m.%d")
-
-    # # Excelの全シートを取得
-    # df_dict = pd.read_excel(BytesIO(contents), engine="openpyxl", sheet_name=None)
-    # # print(df_dict)
-    
-
-    # # 各シートをJSON化
-    # sheets_data = {}
-    # for sheet_name, df in df_dict.items():
-
-    #     # もし `sheet_name` が `sheets_data` に存在しなければ、新しい辞書を作成
-    #     if sheet_name not in sheets_data:
-    #         sheets_data[sheet_name] = {}
-
-    #     # `updateDate` と `data` をセット
-    #     sheets_data[sheet_name]["updateDate"] = datetime_str
-    #     sheets_data[sheet_name]["data"] = json.loads(df.to_json(orient="records", force_ascii=False))
-
-    # print(json.dumps(sheets_data, indent=2, ensure_ascii=False))
-
-    # return JSONResponse({"sheets": sheets_data})
